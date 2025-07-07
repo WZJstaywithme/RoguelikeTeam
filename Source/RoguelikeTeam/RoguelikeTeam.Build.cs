@@ -8,7 +8,7 @@ public class RoguelikeTeam : ModuleRules
 	{
 		PCHUsage = PCHUsageMode.UseExplicitOrSharedPCHs;
 	
-		PublicDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "Engine", "InputCore", "EnhancedInput" });
+		PublicDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "Engine", "InputCore", "GameplayAbilities", "GameplayAbilities",  "GameplayTasks", "Niagara", "AIModule", "AIModule" });
 
 		PrivateDependencyModuleNames.AddRange(new string[] {  });
 
