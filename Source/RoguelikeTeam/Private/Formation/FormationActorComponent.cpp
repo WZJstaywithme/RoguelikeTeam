@@ -48,11 +48,11 @@ void UFormationActorComponent::InitPoint(UFormationInfo* InFormationInfo)
 	}
 }
 
-void UFormationActorComponent::AddMemberToSlot(ATeamCharacter* Character, int32 SlotIndex)
+void UFormationActorComponent::AddMemberToSlot(ATeamPartner* Partner, int32 SlotIndex)
 {
-	if (Character && PointCollection && SlotIndex >= 0 && SlotIndex < PointCollection->NumPoints)
+	if (Partner && PointCollection && SlotIndex >= 0 && SlotIndex < PointCollection->NumPoints)
 	{
-		FormationCharacterMap.Add(SlotIndex, Character);
+		FormationCharacterMap.Add(SlotIndex, Partner);
 	}
 }
 
@@ -73,13 +73,13 @@ void UFormationActorComponent::UpdateAllMemberPositions(FVector LeaderLocation)
 		{
 			continue;
 		}
-		if (ATeamCharacter* Character = Pair.Value)
+		if (ATeamPartner* Partner = Pair.Value)
 		{
 			FVector TargetPosition = (PointCollection->ImmutablePts[Pair.Key]->GetComponentLocation() -
 				PointCollection->ImmutablePts[0]->GetComponentLocation());
 
 			// 通知AI控制器
-			if (ATeamAIController* AIController = Cast<ATeamAIController>(Character->GetController()))
+			if (ATeamAIController* AIController = Cast<ATeamAIController>(Partner->GetController()))
 			{
 				AIController->SetMoveTarget(LeaderLocation + TargetPosition);
 			}

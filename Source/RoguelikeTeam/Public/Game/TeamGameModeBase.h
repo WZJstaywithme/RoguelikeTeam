@@ -6,6 +6,7 @@
 #include "GameFramework/GameModeBase.h"
 #include "TeamGameModeBase.generated.h"
 
+class UCharacterClassInfo;
 /**
  * 
  */
@@ -15,6 +16,10 @@ class ROGUELIKETEAM_API ATeamGameModeBase : public AGameModeBase
 	GENERATED_BODY()
 
 public:
+	
+	UPROPERTY(EditDefaultsOnly, Category = "Character Class Defaults")
+	TObjectPtr<UCharacterClassInfo> CharacterClassInfo;
+	
 	ATeamGameModeBase();
     
 	// 获取当前目标位置

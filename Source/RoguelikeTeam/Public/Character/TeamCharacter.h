@@ -24,15 +24,10 @@ class ROGUELIKETEAM_API ATeamCharacter : public ATeamCharacterBase
 
 	virtual void BeginPlay() override;
 public:
-	virtual void PossessedBy(AController* NewController) override;
-	
+
+	virtual void OnRep_PlayerState() override;
+	void InitAbilityActorInfo();
+
 	UPROPERTY(EditAnywhere)
 	TObjectPtr<UFormationInfo> FormationInfo;
-
-	UPROPERTY(EditAnywhere, Category = "AI")
-	TObjectPtr<UBehaviorTree> BehaviorTree;
-
-protected:
-	UPROPERTY()
-	TObjectPtr<APartnerAIController> TeamAIController;
 };

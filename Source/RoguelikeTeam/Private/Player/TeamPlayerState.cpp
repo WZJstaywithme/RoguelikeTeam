@@ -3,14 +3,19 @@
 
 #include "Player/TeamPlayerState.h"
 
-#include "BehaviorTree/BehaviorTreeComponent.h"
 #include "Formation/FormationActorComponent.h"
 
 class ATeamAIController;
 
 ATeamPlayerState::ATeamPlayerState()
 {
+	AbilitySystemComponent = CreateDefaultSubobject<UTeamAbilitySystemComponent>("AbilitySystemComponent");
+	// AbilitySystemComponent->SetIsReplicated(true);
+	// AbilitySystemComponent->SetReplicationMode(EGameplayEffectReplicationMode::Mixed);
+	
 	FormationActorComponent = CreateDefaultSubobject<UFormationActorComponent>("FormationActorComponent");
+
+	// AttributeSet = CreateDefaultSubobject<UAuraAttributeSet>("AttributeSet");
 }
 
 void ATeamPlayerState::BeginPlay()
@@ -30,6 +35,11 @@ UFormationActorComponent* ATeamPlayerState::GetFormationActorComponent() const
 	return FormationActorComponent;
 }
 
+UAbilitySystemComponent* ATeamPlayerState::GetAbilitySystemComponent() const
+{
+	return AbilitySystemComponent;
+}
+
 void ATeamPlayerState::SpawnFormationTeam(ATeamCharacter* TeamCharacter)
 {
 	if (!FormationActorComponent) return;
@@ -39,7 +49,7 @@ void ATeamPlayerState::SpawnFormationTeam(ATeamCharacter* TeamCharacter)
 	
 	FVector ActorLocation = TeamCharacter->GetActorLocation();
 
-	FormationActorComponent -> FormationCharacterMap.Add(0, TeamCharacter);
+	// FormationActorComponent -> FormationCharacterMap.Add(0, TeamCharacter);
 	for (int i = 1; i < PointCollection -> NumPoints; ++i)
 	{
 		USceneComponent* SceneComponent = PointCollection -> ImmutablePts[i];
@@ -49,36 +59,36 @@ void ATeamPlayerState::SpawnFormationTeam(ATeamCharacter* TeamCharacter)
 			continue;
 		}
 
-		TSubclassOf<ATeamCharacter> CharacterClass = FormationCharacterMap[i];
+		TSubclassOf<ATeamPartner> CharacterClass = FormationCharacterMap[i];
 
 		FActorSpawnParameters SpawnParams;
 		SpawnParams.Owner = this;
 		SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn;
 		
 		// 在指定位置生成角色
-		ATeamCharacter* Character = GetWorld()->SpawnActor<ATeamCharacter>(
+		ATeamPartner* Partner = GetWorld()->SpawnActor<ATeamPartner>(
 			CharacterClass,
 			ActorLocation + RelativeLocation ,
 			FRotator::ZeroRotator,
 			SpawnParams
 		);
 
-		if (Character)
+		if (Partner)
 		{
 			// 添加角色到Formation组件的槽位映射
-			FormationActorComponent -> FormationCharacterMap.Add(i, Character);
+			FormationActorComponent -> FormationCharacterMap.Add(i, Partner);
             
 			// 分配控制器
 			if (i != 0)
 			{
 				// 创建AI控制器
-				ATeamAIController* AIController = GetWorld()->SpawnActor<ATeamAIController>(
+ 				ATeamAIController* AIController = GetWorld()->SpawnActor<ATeamAIController>(
 					TeamAIController,
 					FVector::ZeroVector,
 					FRotator::ZeroRotator
 				);
-				Character->PossessedBy(AIController);
-				AIController->Possess(Character);
+				Partner->PossessedBy(AIController);
+				AIController->Possess(Partner);
 			}
 		}
 	}

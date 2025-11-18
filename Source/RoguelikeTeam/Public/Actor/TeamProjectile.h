@@ -3,8 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "NiagaraComponent.h"
-#include "NiagaraFunctionLibrary.h"
+#include "TeamAbilityTypes.h"
 #include "NiagaraSystem.h"
 #include "GameFramework/Actor.h"
 #include "GameFramework/ProjectileMovementComponent.h"
@@ -27,28 +26,25 @@ public:
 	UPROPERTY(VisibleAnywhere)
 	TObjectPtr<UProjectileMovementComponent> ProjectileMovement;
 
-	// UPROPERTY(BlueprintReadWrite, meta = (ExposeOnSpawn = true))
-	// FDamageEffectParams DamageEffectParams;
+	UPROPERTY(BlueprintReadWrite, meta = (ExposeOnSpawn = true))
+	FDamageEffectParams DamageEffectParams;
 
 	UPROPERTY()
 	TObjectPtr<USceneComponent> HomingTargetSceneComponent;
 
 protected:
 	virtual void BeginPlay() override;
-	virtual void Tick(float DeltaTime) override;
 
-	// UFUNCTION(BlueprintCallable)
-	// virtual void OnHit();
-	// virtual void Destroyed() override;
+	UFUNCTION(BlueprintCallable)
+	virtual void OnHit();
+	virtual void Destroyed() override;
 
-	// UFUNCTION()
-	// virtual void OnSphereOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
+	UFUNCTION()
+	virtual void OnSphereOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
+	bool IsValidOverlap(AActor* OtherActor);
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	TObjectPtr<USphereComponent> Sphere;
-
-	// bool IsValidOverlap(AActor* OtherActor);
-	bool bHit = false;
 
 	UPROPERTY()
 	TObjectPtr<UAudioComponent> LoopingSoundComponent;

@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Character/TeamCharacter.h"
+#include "Character/TeamPartner.h"
 #include "Components/ActorComponent.h"
 #include "Data/FormationInfo.h"
 #include "FormationActorComponent.generated.h"
@@ -21,7 +22,7 @@ public:
 	// Sets default values for this component's properties
 	UFormationActorComponent();
 	void InitPoint(UFormationInfo* FormationInfo);
-	void AddMemberToSlot(ATeamCharacter* Character, int32 SlotIndex);
+	void AddMemberToSlot(ATeamPartner* Partner, int32 SlotIndex);
 	void RotateFormation(float Angle);
 	void UpdateAllMemberPositions(FVector ActorLocation);
 
@@ -45,5 +46,5 @@ protected:
 
 public:
 	UPROPERTY(EditAnywhere)
-	TMap<int32, ATeamCharacter*> FormationCharacterMap;
+	TMap<int32, ATeamPartner*> FormationCharacterMap;
 };
