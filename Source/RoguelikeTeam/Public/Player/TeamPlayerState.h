@@ -6,10 +6,10 @@
 #include "AI/TeamAIController.h"
 #include "AbilitySystemInterface.h"
 #include "Character/TeamCharacter.h"
-#include "Character/TeamPartner.h"
 #include "GameFramework/PlayerState.h"
 #include "TeamPlayerState.generated.h"
 
+class ATeamPartner;
 class UFormationInfo;
 class UFormationActorComponent;
 /**

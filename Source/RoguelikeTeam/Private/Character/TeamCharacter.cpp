@@ -7,13 +7,30 @@
 #include "BehaviorTree/BehaviorTree.h"
 #include "BehaviorTree/BlackboardComponent.h"
 #include "Formation/FormationActorComponent.h"
+#include "Game/TeamGameModeBase.h"
+#include "Kismet/GameplayStatics.h"
 #include "Player/TeamPlayerState.h"
 
+class ATeamGameModeBase;
 class ATeamPlayerState;
 
 ATeamCharacter::ATeamCharacter()
 {
 	
+}
+
+void ATeamCharacter::PossessedBy(AController* NewController)
+{
+	Super::PossessedBy(NewController);
+
+	// Init ability actor info for the Server
+	InitAbilityActorInfo();
+	// LoadProgress();
+
+	// if (ATeamGameModeBase* AuraGameMode = Cast<ATeamGameModeBase>(UGameplayStatics::GetGameMode(this)))
+	// {
+	// 	AuraGameMode->LoadWorldState(GetWorld());
+	// }
 }
 
 void ATeamCharacter::BeginPlay()
@@ -35,9 +52,9 @@ void ATeamCharacter::InitAbilityActorInfo()
 	ATeamPlayerState* TeamPlayerState = GetPlayerState<ATeamPlayerState>();
 	check(TeamPlayerState);
 	TeamPlayerState->GetAbilitySystemComponent()->InitAbilityActorInfo(TeamPlayerState, this);
-	// Cast<UAuraAbilitySystemComponent>(AuraPlayerState->GetAbilitySystemComponent())->AbilityActorInfoSet();
+	// Cast<UTeamAbilitySystemComponent>(TeamPlayerState->GetAbilitySystemComponent())->AbilityActorInfoSet();
 	AbilitySystemComponent = TeamPlayerState->GetAbilitySystemComponent();
-	// AttributeSet = AuraPlayerState->GetAttributeSet();
+	// AttributeSet = TeamPlayerState->GetAttributeSet();
 	// OnAscRegistered.Broadcast(AbilitySystemComponent);
 	// AbilitySystemComponent->RegisterGameplayTagEvent(FAuraGameplayTags::Get().Debuff_Stun, EGameplayTagEventType::NewOrRemoved).AddUObject(this, &AAuraCharacter::StunTagChanged);
 	//

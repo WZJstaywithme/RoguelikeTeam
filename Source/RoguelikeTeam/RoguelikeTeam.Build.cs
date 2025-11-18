@@ -9,10 +9,11 @@ public class RoguelikeTeam : ModuleRules
 		PrivateDependencyModuleNames.AddRange(new string[] { "MotionWarping" });
 		PCHUsage = PCHUsageMode.UseExplicitOrSharedPCHs;
 	
-		PublicDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "Engine", "InputCore", "GameplayAbilities", "GameplayAbilities",  "GameplayTasks", "Niagara", "UMG", "AIModule", "GameplayTags" });
+		PublicDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "Engine", "InputCore", "GameplayAbilities",  "GameplayTasks", "Niagara", "UMG", "AIModule", "GameplayTags" });
 		
+		// PublicDefinitions.Add("UE_ENABLE_ADDRESS_SANITIZER=1");
 		// Uncomment if you are using Slate UI
-		// PrivateDependencyModuleNames.AddRange(new string[] { "Slate", "SlateCore" });
+		PrivateDependencyModuleNames.AddRange(new string[] { "Slate", "SlateCore" });
 		
 		// Uncomment if you are using online features
 		// PrivateDependencyModuleNames.Add("OnlineSubsystem");

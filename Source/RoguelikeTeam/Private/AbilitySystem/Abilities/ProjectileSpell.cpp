@@ -57,7 +57,7 @@ void UProjectileSpell::SpawnProjectiles(const FVector& ProjectileTargetLocation,
 		Cast<APawn>(GetOwningActorFromActorInfo()),
 		ESpawnActorCollisionHandlingMethod::AlwaysSpawn);
 	
-		// Projectile->DamageEffectParams = MakeDamageEffectParamsFromClassDefaults();
+		Projectile->DamageEffectParams = MakeDamageEffectParamsFromClassDefaults();
 
 		if (HomingTarget && HomingTarget->Implements<UCombatInterface>())
 		{

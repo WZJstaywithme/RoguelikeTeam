@@ -14,32 +14,22 @@ class UMotionWarpingComponent;
 class UAbilitySystemComponent;
 
 UCLASS(Abstract)
-class ROGUELIKETEAM_API ATeamCharacterBase : public ACharacter, public ICombatInterface, public IAbilitySystemInterface
+class ROGUELIKETEAM_API ATeamCharacterBase : public ACharacter, public IAbilitySystemInterface
 {
 	GENERATED_BODY()
 
 public:
 	// Sets default values for this character's properties
 	ATeamCharacterBase();
-
+	virtual void PossessedBy(AController* NewController) override;
 	virtual UAbilitySystemComponent* GetAbilitySystemComponent() const override;
-
-	/** Combat Interface */
-	virtual FVector GetCombatSocketLocation_Implementation(const FGameplayTag& MontageTag) override;
-	virtual TArray<FTaggedMontage> GetAttackMontages_Implementation() override;
-	/** end Combat Interface */
-
-	/** Combat Interface */
-	virtual int32 GetPlayerLevel_Implementation() override;
-	virtual void Die(const FVector& DeathImpulse) override;
-	/** end Combat Interface */
 
 	UPROPERTY(EditAnywhere, Category = "Combat")
 	TArray<FTaggedMontage> AttackMontages;
 
-	FOnASCRegistered OnAscRegistered;
-	FOnDeathSignature OnDeathDelegate;
-	FOnDamageSignature OnDamageDelegate;
+	// FOnASCRegistered OnAscRegistered;
+	// FOnDeathSignature OnDeathDelegate;
+	// FOnDamageSignature OnDamageDelegate;
 	
 protected:
 	// Called when the game starts or when spawned

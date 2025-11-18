@@ -4,7 +4,6 @@
 
 #include "CoreMinimal.h"
 #include "TeamCombatCharacter.h"
-#include "Character/TeamCharacterBase.h"
 #include "TeamPartner.generated.h"
 
 class UBehaviorTree;
@@ -20,5 +19,4 @@ public:
 	ATeamPartner();
 
 	virtual void BeginPlay() override;
-	virtual void PossessedBy(AController* NewController) override;
 };

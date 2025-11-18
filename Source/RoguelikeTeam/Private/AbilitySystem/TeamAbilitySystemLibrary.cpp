@@ -6,42 +6,114 @@
 #include "AbilitySystemBlueprintLibrary.h"
 #include "TeamGameplayTags.h"
 
-#include "AbilitySystemBlueprintLibrary.h"
 #include "TeamAbilityTypes.h"
-#include "TeamGameplayTags.h"
 #include "Game/TeamGameModeBase.h"
 // #include "Game/LoadScreenSaveGame.h"
+#include "Character/TeamCombatCharacter.h"
+#include "Engine/OverlapResult.h"
 #include "Interaction/CombatInterface.h"
 #include "Kismet/GameplayStatics.h"
 #include "Player/TeamPlayerState.h"
 // #include "UI/HUD/TeamHUD.h"
 // #include "UI/WidgetController/TeamWidgetController.h"
 
-#define IMPLEMENT_EFFECT_CONTEXT_ACCESSORS(ClassName, PropertyName, ValueType, DefaultValue) \
-void ClassName::Set##PropertyName(FGameplayEffectContextHandle& EffectContextHandle, ValueType Value) \
-{ \
-if (FTeamGameplayEffectContext* Context = static_cast<FTeamGameplayEffectContext*>(EffectContextHandle.Get())) \
-{ \
-Context->Set##PropertyName(Value); \
-} \
-} \
-ValueType ClassName::Get##PropertyName(const FGameplayEffectContextHandle& EffectContextHandle) \
-{ \
-if (const FTeamGameplayEffectContext* Context = static_cast<const FTeamGameplayEffectContext*>(EffectContextHandle.Get())) \
-{ \
-return Context->Get##PropertyName(); \
-} \
-return DefaultValue; \
+void UTeamAbilitySystemLibrary::SetDeathImpulse(FGameplayEffectContextHandle& EffectContextHandle,
+                                                const FVector& InImpulse)
+{
+	if (FTeamGameplayEffectContext* TeamEffectContext = static_cast<FTeamGameplayEffectContext*>(EffectContextHandle.
+		Get()))
+	{
+		TeamEffectContext->SetDeathImpulse(InImpulse);
+	}
 }
 
-IMPLEMENT_EFFECT_CONTEXT_ACCESSORS(UTeamAbilitySystemLibrary, IsCriticalHit, bool, false)
-IMPLEMENT_EFFECT_CONTEXT_ACCESSORS(UTeamAbilitySystemLibrary, IsRadialDamage, bool, false)
-IMPLEMENT_EFFECT_CONTEXT_ACCESSORS(UTeamAbilitySystemLibrary, IsAvoidedHit, bool, false)
-IMPLEMENT_EFFECT_CONTEXT_ACCESSORS(UTeamAbilitySystemLibrary, RadialDamageInnerRadius, float, 0.f)
-IMPLEMENT_EFFECT_CONTEXT_ACCESSORS(UTeamAbilitySystemLibrary, RadialDamageOuterRadius, float, 0.f)
-IMPLEMENT_EFFECT_CONTEXT_ACCESSORS(UTeamAbilitySystemLibrary, RadialDamageOrigin, FVector, FVector::ZeroVector)
-IMPLEMENT_EFFECT_CONTEXT_ACCESSORS(UTeamAbilitySystemLibrary, DeathImpulse, FVector, FVector::ZeroVector)
-IMPLEMENT_EFFECT_CONTEXT_ACCESSORS(UTeamAbilitySystemLibrary, KnockbackForce, FVector, FVector::ZeroVector)
+bool UTeamAbilitySystemLibrary::IsCriticalHit(const FGameplayEffectContextHandle& EffectContextHandle)
+{
+	if (const FTeamGameplayEffectContext* AuraEffectContext = static_cast<const FTeamGameplayEffectContext*>(EffectContextHandle.Get()))
+	{
+		return AuraEffectContext->GetIsCriticalHit();
+	}
+	return false;
+}
+
+void UTeamAbilitySystemLibrary::SetKnockbackForce(FGameplayEffectContextHandle& EffectContextHandle,
+                                                  const FVector& InForce)
+{
+	if (FTeamGameplayEffectContext* TeamEffectContext = static_cast<FTeamGameplayEffectContext*>(EffectContextHandle.
+		Get()))
+	{
+		TeamEffectContext->SetKnockbackForce(InForce);
+	}
+}
+
+void UTeamAbilitySystemLibrary::SetIsCriticalHit(FGameplayEffectContextHandle& EffectContextHandle,
+	bool bInIsCriticalHit)
+{
+	if (FTeamGameplayEffectContext* TeamEffectContext = static_cast<FTeamGameplayEffectContext*>(EffectContextHandle.
+		Get()))
+	{
+		TeamEffectContext->SetIsCriticalHit(bInIsCriticalHit);
+	}
+}
+
+bool UTeamAbilitySystemLibrary::IsAvoidedHit(const FGameplayEffectContextHandle& EffectContextHandle)
+{
+	if (const FTeamGameplayEffectContext* AuraEffectContext = static_cast<const FTeamGameplayEffectContext*>(EffectContextHandle.Get()))
+	{
+		return AuraEffectContext->GetIsCriticalHit();
+	}
+	return false;
+}
+
+void UTeamAbilitySystemLibrary::SetIsAvoidedHit(FGameplayEffectContextHandle& EffectContextHandle,
+                                                bool bInIsAvoidedHit)
+{
+	if (FTeamGameplayEffectContext* TeamEffectContext = static_cast<FTeamGameplayEffectContext*>(EffectContextHandle.
+		Get()))
+	{
+		TeamEffectContext->SetIsAvoidedHit(bInIsAvoidedHit);
+	}
+}
+
+void UTeamAbilitySystemLibrary::SetIsRadialDamage(FGameplayEffectContextHandle& EffectContextHandle,
+                                                  bool bInIsRadialDamage)
+{
+	if (FTeamGameplayEffectContext* TeamEffectContext = static_cast<FTeamGameplayEffectContext*>(EffectContextHandle.
+		Get()))
+	{
+		TeamEffectContext->SetIsRadialDamage(bInIsRadialDamage);
+	}
+}
+
+void UTeamAbilitySystemLibrary::SetRadialDamageInnerRadius(FGameplayEffectContextHandle& EffectContextHandle,
+                                                           float InInnerRadius)
+{
+	if (FTeamGameplayEffectContext* TeamEffectContext = static_cast<FTeamGameplayEffectContext*>(EffectContextHandle.
+		Get()))
+	{
+		TeamEffectContext->SetRadialDamageInnerRadius(InInnerRadius);
+	}
+}
+
+void UTeamAbilitySystemLibrary::SetRadialDamageOuterRadius(FGameplayEffectContextHandle& EffectContextHandle,
+                                                           float InOuterRadius)
+{
+	if (FTeamGameplayEffectContext* TeamEffectContext = static_cast<FTeamGameplayEffectContext*>(EffectContextHandle.
+		Get()))
+	{
+		TeamEffectContext->SetRadialDamageOuterRadius(InOuterRadius);
+	}
+}
+
+void UTeamAbilitySystemLibrary::SetRadialDamageOrigin(FGameplayEffectContextHandle& EffectContextHandle,
+                                                      const FVector& InOrigin)
+{
+	if (FTeamGameplayEffectContext* TeamEffectContext = static_cast<FTeamGameplayEffectContext*>(EffectContextHandle.
+		Get()))
+	{
+		TeamEffectContext->SetRadialDamageOrigin(InOrigin);
+	}
+}
 
 
 // bool UTeamAbilitySystemLibrary::MakeWidgetControllerParams(const UObject* WorldContextObject, FWidgetControllerParams& OutWCParams, ATeamHUD*& OutTeamHUD)
@@ -98,7 +170,9 @@ IMPLEMENT_EFFECT_CONTEXT_ACCESSORS(UTeamAbilitySystemLibrary, KnockbackForce, FV
 // 	return nullptr;
 // }
 //
-void UTeamAbilitySystemLibrary::InitializeDefaultAttributes(const UObject* WorldContextObject, ECharacterClass CharacterClass, float Level, UAbilitySystemComponent* ASC)
+void UTeamAbilitySystemLibrary::InitializeDefaultAttributes(const UObject* WorldContextObject,
+                                                            ECharacterClass CharacterClass, float Level,
+                                                            UAbilitySystemComponent* ASC)
 {
 	AActor* AvatarActor = ASC->GetAvatarActor();
 
@@ -107,21 +181,30 @@ void UTeamAbilitySystemLibrary::InitializeDefaultAttributes(const UObject* World
 
 	FGameplayEffectContextHandle PrimaryAttributesContextHandle = ASC->MakeEffectContext();
 	PrimaryAttributesContextHandle.AddSourceObject(AvatarActor);
-	const FGameplayEffectSpecHandle PrimaryAttributesSpecHandle = ASC->MakeOutgoingSpec(ClassDefaultInfo.PrimaryAttributes, Level, PrimaryAttributesContextHandle);
+	const FGameplayEffectSpecHandle PrimaryAttributesSpecHandle = ASC->MakeOutgoingSpec(
+		ClassDefaultInfo.PrimaryAttributes, Level, PrimaryAttributesContextHandle);
 	ASC->ApplyGameplayEffectSpecToSelf(*PrimaryAttributesSpecHandle.Data.Get());
 
 	FGameplayEffectContextHandle SecondaryAttributesContextHandle = ASC->MakeEffectContext();
 	SecondaryAttributesContextHandle.AddSourceObject(AvatarActor);
-	const FGameplayEffectSpecHandle SecondaryAttributesSpecHandle = ASC->MakeOutgoingSpec(CharacterClassInfo->SecondaryAttributes, Level, SecondaryAttributesContextHandle);
+	const FGameplayEffectSpecHandle SecondaryAttributesSpecHandle = ASC->MakeOutgoingSpec(
+		CharacterClassInfo->SecondaryAttributes, Level, SecondaryAttributesContextHandle);
 	ASC->ApplyGameplayEffectSpecToSelf(*SecondaryAttributesSpecHandle.Data.Get());
 
 	FGameplayEffectContextHandle VitalAttributesContextHandle = ASC->MakeEffectContext();
 	VitalAttributesContextHandle.AddSourceObject(AvatarActor);
-	const FGameplayEffectSpecHandle VitalAttributesSpecHandle = ASC->MakeOutgoingSpec(CharacterClassInfo->VitalAttributes, Level, VitalAttributesContextHandle);
+	const FGameplayEffectSpecHandle VitalAttributesSpecHandle = ASC->MakeOutgoingSpec(
+		CharacterClassInfo->VitalAttributes, Level, VitalAttributesContextHandle);
 	ASC->ApplyGameplayEffectSpecToSelf(*VitalAttributesSpecHandle.Data.Get());
+
+	FGameplayEffectContextHandle ActionAttributesContextHandle = ASC->MakeEffectContext();
+	ActionAttributesContextHandle.AddSourceObject(AvatarActor);
+	const FGameplayEffectSpecHandle ActionAttributesSpecHandle = ASC->MakeOutgoingSpec(
+		CharacterClassInfo->ActionAttribute, Level, ActionAttributesContextHandle);
+	ASC->ApplyGameplayEffectSpecToSelf(*ActionAttributesSpecHandle.Data.Get());
 }
 
-// void UTeamAbilitySystemLibrary::InitializeDefaultAttributesFromSaveData(const UObject* WorldContextObject, UAbilitySystemComponent* ASC, ULoadScreenSaveGame* SaveGame)
+// void UTeamAbilitySystemLibrary::InitializeDefaultAttributesFromSaveData(const UObject	* WorldContextObject, UAbilitySystemComponent* ASC, ULoadScreenSaveGame* SaveGame)
 // {
 // 	UCharacterClassInfo* CharacterClassInfo = GetCharacterClassInfo(WorldContextObject);
 // 	if (CharacterClassInfo == nullptr) return;
@@ -153,7 +236,23 @@ void UTeamAbilitySystemLibrary::InitializeDefaultAttributes(const UObject* World
 // 	ASC->ApplyGameplayEffectSpecToSelf(*VitalAttributesSpecHandle.Data.Get());
 // }
 //
-void UTeamAbilitySystemLibrary::GiveStartupAbilities(const UObject* WorldContextObject, UAbilitySystemComponent* ASC, ECharacterClass CharacterClass)
+
+void UTeamAbilitySystemLibrary::InitAbilitySystemUI(const UObject* WorldContextObject, ATeamCombatCharacter* Character,
+													 ECharacterClass CharacterClass)
+{
+	UCharacterClassInfo* CharacterClassInfo = GetCharacterClassInfo(WorldContextObject);
+	if (CharacterClassInfo == nullptr) return;
+
+	const FCharacterClassDefaultInfo& DefaultInfo = CharacterClassInfo->GetClassDefaultInfo(CharacterClass);
+	TArray<TSubclassOf<UTeamUserWidget>> SubclassOfs = DefaultInfo.BarWidgets;
+	for (TSubclassOf WidgetClass : SubclassOfs)
+	{
+		Character->BarWidgets.Add(WidgetClass);
+	}  			
+}
+
+void UTeamAbilitySystemLibrary::GiveStartupAbilities(const UObject* WorldContextObject, UAbilitySystemComponent* ASC,
+                                                     ECharacterClass CharacterClass)
 {
 	UCharacterClassInfo* CharacterClassInfo = GetCharacterClassInfo(WorldContextObject);
 	if (CharacterClassInfo == nullptr) return;
@@ -167,7 +266,9 @@ void UTeamAbilitySystemLibrary::GiveStartupAbilities(const UObject* WorldContext
 	{
 		if (ASC->GetAvatarActor()->Implements<UCombatInterface>())
 		{
-			FGameplayAbilitySpec AbilitySpec = FGameplayAbilitySpec(AbilityClass, ICombatInterface::Execute_GetPlayerLevel(ASC->GetAvatarActor()));
+			FGameplayAbilitySpec AbilitySpec = FGameplayAbilitySpec(AbilityClass,
+			                                                        ICombatInterface::Execute_GetPlayerLevel(
+				                                                        ASC->GetAvatarActor()));
 			ASC->GiveAbility(AbilitySpec);
 		}
 	}
@@ -231,27 +332,32 @@ UCharacterClassInfo* UTeamAbilitySystemLibrary::GetCharacterClassInfo(const UObj
 	return TeamGameMode->CharacterClassInfo;
 }
 
-// void UTeamAbilitySystemLibrary::GetLivePlayersWithinRadius(const UObject* WorldContextObject,
-//                                                            TArray<AActor*>& OutOverlappingActors, const TArray<AActor*>& ActorsToIgnore, float Radius,
-//                                                            const FVector& SphereOrigin)
-// {
-// 	FCollisionQueryParams SphereParams;
-// 	SphereParams.AddIgnoredActors(ActorsToIgnore);
-// 	
-// 	if (const UWorld* World = GEngine->GetWorldFromContextObject(WorldContextObject, EGetWorldErrorMode::LogAndReturnNull))
-// 	{
-// 		TArray<FOverlapResult> Overlaps;
-// 		World->OverlapMultiByObjectType(Overlaps, SphereOrigin, FQuat::Identity, FCollisionObjectQueryParams(FCollisionObjectQueryParams::InitType::AllDynamicObjects), FCollisionShape::MakeSphere(Radius), SphereParams);
-// 		for (FOverlapResult& Overlap : Overlaps)
-// 		{
-// 			if (Overlap.GetActor()->Implements<UCombatInterface>() && !ICombatInterface::Execute_IsDead(Overlap.GetActor()))
-// 			{
-// 				OutOverlappingActors.AddUnique(ICombatInterface::Execute_GetAvatar(Overlap.GetActor()));
-// 			}
-// 		}
-// 	}
-// }
-//
+void UTeamAbilitySystemLibrary::GetLivePlayersWithinRadius(const UObject* WorldContextObject,
+                                                           TArray<AActor*>& OutOverlappingActors, const TArray<AActor*>& ActorsToIgnore, float Radius,
+                                                           const FVector& SphereOrigin)
+{
+	FCollisionQueryParams SphereParams;
+	SphereParams.AddIgnoredActors(ActorsToIgnore);
+	
+	if (const UWorld* World = GEngine->GetWorldFromContextObject(WorldContextObject, EGetWorldErrorMode::LogAndReturnNull))
+	{
+		TArray<FOverlapResult> Overlaps;
+		World->OverlapMultiByObjectType(Overlaps, SphereOrigin, FQuat::Identity, FCollisionObjectQueryParams(FCollisionObjectQueryParams::InitType::AllDynamicObjects), FCollisionShape::MakeSphere(Radius), SphereParams);
+		for (FOverlapResult& Overlap : Overlaps)
+		{
+			if (Overlap.GetActor()->Implements<UCombatInterface>() && !ICombatInterface::Execute_IsDead(Overlap.GetActor()))
+			{
+				OutOverlappingActors.AddUnique(ICombatInterface::Execute_GetAvatar(Overlap.GetActor()));
+			}
+		}
+	}
+}
+
+FGameplayTag UTeamAbilitySystemLibrary::FindTag(const FName& TagName)
+{
+	return FGameplayTag::RequestGameplayTag(TagName, false);
+}
+
 // void UTeamAbilitySystemLibrary::GetClosestTargets(int32 MaxTargets, const TArray<AActor*>& Actors, TArray<AActor*>& OutClosestTargets, const FVector& Origin)
 // {
 // 	if (Actors.Num() <= MaxTargets)
@@ -285,7 +391,9 @@ UCharacterClassInfo* UTeamAbilitySystemLibrary::GetCharacterClassInfo(const UObj
 //
 bool UTeamAbilitySystemLibrary::IsNotFriend(AActor* FirstActor, AActor* SecondActor)
 {
-	const bool bBothArePlayers = FirstActor->ActorHasTag(FName("Player")) && SecondActor->ActorHasTag(FName("Player"));
+	const bool bBothArePlayers =
+		(FirstActor->ActorHasTag(FName("Player")) || FirstActor->ActorHasTag(FName("Partner"))) && 
+		(SecondActor->ActorHasTag(FName("Player")) || SecondActor->ActorHasTag(FName("Partner")));
 	const bool bBothAreEnemies = FirstActor->ActorHasTag(FName("Enemy")) && SecondActor->ActorHasTag(FName("Enemy"));
 	const bool bFriends = bBothArePlayers || bBothAreEnemies;
 	return !bFriends;
@@ -295,25 +403,27 @@ FGameplayEffectContextHandle UTeamAbilitySystemLibrary::ApplyDamageEffect(const 
 {
 	const FTeamGameplayTags& GameplayTags = FTeamGameplayTags::Get();
 	const AActor* SourceAvatarActor = DamageEffectParams.SourceAbilitySystemComponent->GetAvatarActor();
-	
-	FGameplayEffectContextHandle EffectContextHandle = DamageEffectParams.SourceAbilitySystemComponent->MakeEffectContext();
+
+	FGameplayEffectContextHandle EffectContextHandle = DamageEffectParams.SourceAbilitySystemComponent->
+	                                                                      MakeEffectContext();
 	EffectContextHandle.AddSourceObject(SourceAvatarActor);
 	SetDeathImpulse(EffectContextHandle, DamageEffectParams.DeathImpulse);
 	SetKnockbackForce(EffectContextHandle, DamageEffectParams.KnockbackForce);
-
+	
 	SetIsRadialDamage(EffectContextHandle, DamageEffectParams.bIsRadialDamage);
 	SetRadialDamageInnerRadius(EffectContextHandle, DamageEffectParams.RadialDamageInnerRadius);
 	SetRadialDamageOuterRadius(EffectContextHandle, DamageEffectParams.RadialDamageOuterRadius);
 	SetRadialDamageOrigin(EffectContextHandle, DamageEffectParams.RadialDamageOrigin);
-	
-	const FGameplayEffectSpecHandle SpecHandle = DamageEffectParams.SourceAbilitySystemComponent->MakeOutgoingSpec(DamageEffectParams.DamageGameplayEffectClass, DamageEffectParams.AbilityLevel, EffectContextHandle);
 
+	const FGameplayEffectSpecHandle SpecHandle = DamageEffectParams.SourceAbilitySystemComponent->MakeOutgoingSpec(
+		DamageEffectParams.DamageGameplayEffectClass, DamageEffectParams.AbilityLevel, EffectContextHandle);
+	
 	UAbilitySystemBlueprintLibrary::AssignTagSetByCallerMagnitude(SpecHandle, DamageEffectParams.DamageType, DamageEffectParams.BaseDamage);
 	UAbilitySystemBlueprintLibrary::AssignTagSetByCallerMagnitude(SpecHandle, GameplayTags.Debuff_Chance, DamageEffectParams.DebuffChance);
 	UAbilitySystemBlueprintLibrary::AssignTagSetByCallerMagnitude(SpecHandle, GameplayTags.Debuff_Damage, DamageEffectParams.DebuffDamage);
 	UAbilitySystemBlueprintLibrary::AssignTagSetByCallerMagnitude(SpecHandle, GameplayTags.Debuff_Duration, DamageEffectParams.DebuffDuration);
 	UAbilitySystemBlueprintLibrary::AssignTagSetByCallerMagnitude(SpecHandle, GameplayTags.Debuff_Frequency, DamageEffectParams.DebuffFrequency);
-	
+
 	DamageEffectParams.TargetAbilitySystemComponent->ApplyGameplayEffectSpecToSelf(*SpecHandle.Data);
 	return EffectContextHandle;
 }
@@ -359,3 +469,28 @@ FGameplayEffectContextHandle UTeamAbilitySystemLibrary::ApplyDamageEffect(const 
 // 	}
 // 	return Vectors;
 // }
+
+void UTeamAbilitySystemLibrary::AddLooseTagToAsc(UAbilitySystemComponent* ASC, FGameplayTag Tag, int32 Count)
+{
+	if (ASC && Tag.IsValid())
+	{
+		// 添加 Loose Tag 并设置计数
+		// 第二个参数为 true 表示如果标签不存在则添加，false 则仅更新计数
+		ASC->AddLooseGameplayTag(Tag, Count);
+		
+		// 关键：手动触发同步（Loose Tags 默认不强制同步，这行代码确保客户端能收到变化）
+		ASC->UpdateTagMap(Tag, Count);
+	}
+}
+
+void UTeamAbilitySystemLibrary::RemoveLooseTagFromAsc(UAbilitySystemComponent* ASC, FGameplayTag Tag, int32 Count)
+{
+	if (ASC && Tag.IsValid())
+	{
+		// 移除指定数量的标签计数
+		ASC->RemoveLooseGameplayTag(Tag, Count);
+		
+		// 同步更新
+		ASC->UpdateTagMap(Tag, -Count);
+	}
+}

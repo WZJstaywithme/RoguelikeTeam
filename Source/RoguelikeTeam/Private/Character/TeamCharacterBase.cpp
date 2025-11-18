@@ -19,6 +19,11 @@ ATeamCharacterBase::ATeamCharacterBase()
 	MotionWarpingComponent = CreateDefaultSubobject<UMotionWarpingComponent>(TEXT("MotionWarping"));
 }
 
+void ATeamCharacterBase::PossessedBy(AController* NewController)
+{
+	Super::PossessedBy(NewController);
+}
+
 UAbilitySystemComponent* ATeamCharacterBase::GetAbilitySystemComponent() const
 {
 	return AbilitySystemComponent;
@@ -72,44 +77,3 @@ void ATeamCharacterBase::SetupPlayerInputComponent(UInputComponent* PlayerInputC
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
 
 }
-
-TArray<FTaggedMontage> ATeamCharacterBase::GetAttackMontages_Implementation()
-{
-	return AttackMontages;
-}
-
-void ATeamCharacterBase::Die(const FVector& DeathImpulse)
-{
-	Weapon->DetachFromComponent(FDetachmentTransformRules(EDetachmentRule::KeepWorld, true));
-	// MulticastHandleDeath(DeathImpulse);
-}
-
-int32 ATeamCharacterBase::GetPlayerLevel_Implementation()
-{
-	const ATeamPlayerState* TeamPlayerState = GetPlayerState<ATeamPlayerState>();
-	check(TeamPlayerState);
-	return TeamPlayerState->GetPlayerLevel();
-}
-
-FVector ATeamCharacterBase::GetCombatSocketLocation_Implementation(const FGameplayTag& MontageTag)
-{
-	const FTeamGameplayTags& GameplayTags = FTeamGameplayTags::Get();
-	if (MontageTag.MatchesTagExact(GameplayTags.CombatSocket_Weapon) && IsValid(Weapon))
-	{
-		return Weapon->GetSocketLocation(WeaponTipSocketName);
-	}
-	if (MontageTag.MatchesTagExact(GameplayTags.CombatSocket_LeftHand))
-	{
-		return GetMesh()->GetSocketLocation(LeftHandSocketName);
-	}
-	if (MontageTag.MatchesTagExact(GameplayTags.CombatSocket_RightHand))
-	{
-		return GetMesh()->GetSocketLocation(RightHandSocketName);
-	}
-	if (MontageTag.MatchesTagExact(GameplayTags.CombatSocket_Tail))
-	{
-		return GetMesh()->GetSocketLocation(TailSocketName);
-	}
-	return FVector();
-}
-

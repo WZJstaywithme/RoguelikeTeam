@@ -22,7 +22,6 @@ class ROGUELIKETEAM_API ATeamEnemy : public ATeamCombatCharacter, public IEnemyI
 
 public:
 	ATeamEnemy();
-	virtual void PossessedBy(AController* NewController) override;
 protected:
 	void BeginPlay() override;
 	

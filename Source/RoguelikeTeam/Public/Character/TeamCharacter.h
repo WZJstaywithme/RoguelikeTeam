@@ -21,6 +21,7 @@ class ROGUELIKETEAM_API ATeamCharacter : public ATeamCharacterBase
 	GENERATED_BODY()
 
 	ATeamCharacter();
+	virtual void PossessedBy(AController* NewController) override;
 
 	virtual void BeginPlay() override;
 public:

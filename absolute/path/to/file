@@ -1,0 +1,53 @@
+FGameplayEffectContextHandle UTeamAbilitySystemLibrary::ApplyDamageEffect(const FDamageEffectParams& DamageEffectParams)
+{
+    // 添加详细的有效性检查
+    if (!DamageEffectParams.SourceAbilitySystemComponent)
+    {
+        UE_LOG(LogTemp, Error, TEXT("ApplyDamageEffect: SourceAbilitySystemComponent is null"));
+        return FGameplayEffectContextHandle();
+    }
+    
+    if (!DamageEffectParams.TargetAbilitySystemComponent)
+    {
+        UE_LOG(LogTemp, Error, TEXT("ApplyDamageEffect: TargetAbilitySystemComponent is null"));
+        return FGameplayEffectContextHandle();
+    }
+    
+    if (!DamageEffectParams.DamageGameplayEffectClass)
+    {
+        UE_LOG(LogTemp, Error, TEXT("ApplyDamageEffect: DamageGameplayEffectClass is null"));
+        return FGameplayEffectContextHandle();
+    }
+
+    const FTeamGameplayTags& GameplayTags = FTeamGameplayTags::Get();
+    const AActor* SourceAvatarActor = DamageEffectParams.SourceAbilitySystemComponent->GetAvatarActor();
+    
+    FGameplayEffectContextHandle EffectContextHandle = DamageEffectParams.SourceAbilitySystemComponent->MakeEffectContext();
+    EffectContextHandle.AddSourceObject(SourceAvatarActor);
+    SetDeathImpulse(EffectContextHandle, DamageEffectParams.DeathImpulse);
+    SetKnockbackForce(EffectContextHandle, DamageEffectParams.KnockbackForce);
+    
+    SetIsRadialDamage(EffectContextHandle, DamageEffectParams.bIsRadialDamage);
+    SetRadialDamageInnerRadius(EffectContextHandle, DamageEffectParams.RadialDamageInnerRadius);
+    SetRadialDamageOuterRadius(EffectContextHandle, DamageEffectParams.RadialDamageOuterRadius);
+    SetRadialDamageOrigin(EffectContextHandle, DamageEffectParams.RadialDamageOrigin);
+    
+    const FGameplayEffectSpecHandle SpecHandle = DamageEffectParams.SourceAbilitySystemComponent->MakeOutgoingSpec(
+        DamageEffectParams.DamageGameplayEffectClass, DamageEffectParams.AbilityLevel, EffectContextHandle);
+    
+    // 检查SpecHandle是否有效
+    if (!SpecHandle.Data.IsValid())
+    {
+        UE_LOG(LogTemp, Error, TEXT("ApplyDamageEffect: SpecHandle.Data is invalid"));
+        return FGameplayEffectContextHandle();
+    }
+    
+    UAbilitySystemBlueprintLibrary::AssignTagSetByCallerMagnitude(SpecHandle, DamageEffectParams.DamageType, DamageEffectParams.BaseDamage);
+    UAbilitySystemBlueprintLibrary::AssignTagSetByCallerMagnitude(SpecHandle, GameplayTags.Debuff_Chance, DamageEffectParams.DebuffChance);
+    UAbilitySystemBlueprintLibrary::AssignTagSetByCallerMagnitude(SpecHandle, GameplayTags.Debuff_Damage, DamageEffectParams.DebuffDamage);
+    UAbilitySystemBlueprintLibrary::AssignTagSetByCallerMagnitude(SpecHandle, GameplayTags.Debuff_Duration, DamageEffectParams.DebuffDuration);
+    UAbilitySystemBlueprintLibrary::AssignTagSetByCallerMagnitude(SpecHandle, GameplayTags.Debuff_Frequency, DamageEffectParams.DebuffFrequency);
+    
+    DamageEffectParams.TargetAbilitySystemComponent->ApplyGameplayEffectSpecToSelf(*SpecHandle.Data);
+    return EffectContextHandle;
+}

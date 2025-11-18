@@ -24,14 +24,3 @@ void ATeamEnemy::BeginPlay()
 	Super::BeginPlay();
 }
 
-void ATeamEnemy::PossessedBy(AController* NewController)
-{
-	Super::PossessedBy(NewController);
-
-	TeamAIController = Cast<ATeamAIController>(NewController);
-	TeamAIController->GetBlackboardComponent()->InitializeBlackboard(*BehaviorTree->BlackboardAsset);
-	TeamAIController->RunBehaviorTree(BehaviorTree);
-	TeamAIController->GetBlackboardComponent()->SetValueAsBool(FName("HitReacting"), false);
-	TeamAIController->GetBlackboardComponent()->SetValueAsBool(FName("RangedAttacker"), CharacterClass != ECharacterClass::Warrior);
-}
-

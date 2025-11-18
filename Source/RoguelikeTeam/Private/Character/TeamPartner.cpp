@@ -23,9 +23,3 @@ void ATeamPartner::BeginPlay()
 {
 	Super::BeginPlay();
 }
-
-void ATeamPartner::PossessedBy(AController* NewController)
-{
-	Super::PossessedBy(NewController);
-}
-

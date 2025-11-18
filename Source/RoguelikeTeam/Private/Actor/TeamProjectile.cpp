@@ -10,11 +10,12 @@
 #include "NiagaraFunctionLibrary.h"
 #include "AbilitySystem/TeamAbilitySystemLibrary.h"
 #include "Components/AudioComponent.h"
+#include "Engine/StreamableManager.h"
 
 // Sets default values
 ATeamProjectile::ATeamProjectile()
 {
- 	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
+	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = false;
 
 	Sphere = CreateDefaultSubobject<USphereComponent>("Sphere");
@@ -44,8 +45,28 @@ void ATeamProjectile::BeginPlay()
 
 void ATeamProjectile::OnHit()
 {
-	UGameplayStatics::PlaySoundAtLocation(this, ImpactSound, GetActorLocation(), FRotator::ZeroRotator);
-	UNiagaraFunctionLibrary::SpawnSystemAtLocation(this, ImpactEffect, GetActorLocation());
+	if (ImpactSound)
+	{
+		UGameplayStatics::PlaySoundAtLocation(this, ImpactSound, GetActorLocation(), FRotator::ZeroRotator);
+	}
+
+	if (ImpactEffect && ImpactEffect->IsValidLowLevel())
+	{
+		// 检查Niagara系统状态
+		if (ImpactEffect->IsReadyToRun())
+		{
+			UNiagaraFunctionLibrary::SpawnSystemAtLocation(this, ImpactEffect, GetActorLocation());
+		}
+		else
+		{
+			UE_LOG(LogTemp, Warning, TEXT("Niagara system %s is not ready to run"), *ImpactEffect->GetName());
+		}
+	}
+	else
+	{
+		UE_LOG(LogTemp, Warning, TEXT("ImpactEffect is invalid or null"));
+	}
+
 	if (LoopingSoundComponent)
 	{
 		LoopingSoundComponent->Stop();
@@ -53,18 +74,19 @@ void ATeamProjectile::OnHit()
 	}
 }
 
-void ATeamProjectile::Destroyed()
-{
-	Super::Destroyed();
-}
+// void ATeamProjectile::Destroyed()
+// {
+// 	Super::Destroyed();
+// }
 
 void ATeamProjectile::OnSphereOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
-                                      UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
+                                      UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep,
+                                      const FHitResult& SweepResult)
 {
 	if (!IsValidOverlap(OtherActor)) return;
-	
+
 	OnHit();
-	
+
 	if (UAbilitySystemComponent* TargetASC = UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(OtherActor))
 	{
 		const FVector DeathImpulse = GetActorForwardVector() * DamageEffectParams.DeathImpulseMagnitude;
@@ -74,16 +96,21 @@ void ATeamProjectile::OnSphereOverlap(UPrimitiveComponent* OverlappedComponent, 
 		{
 			FRotator Rotation = GetActorRotation();
 			Rotation.Pitch = 45.f;
-				
+
 			const FVector KnockbackDirection = Rotation.Vector();
 			const FVector KnockbackForce = KnockbackDirection * DamageEffectParams.KnockbackForceMagnitude;
 			DamageEffectParams.KnockbackForce = KnockbackForce;
 		}
-			
+
 		DamageEffectParams.TargetAbilitySystemComponent = TargetASC;
-		UTeamAbilitySystemLibrary::ApplyDamageEffect(DamageEffectParams);
+		if (DamageEffectParams.SourceAbilitySystemComponent &&
+			DamageEffectParams.TargetAbilitySystemComponent &&
+			DamageEffectParams.DamageGameplayEffectClass)
+		{
+			FGameplayEffectContextHandle EffectContextHandle = UTeamAbilitySystemLibrary::ApplyDamageEffect(
+				DamageEffectParams);
+		}
 	}
-		
 	Destroy();
 }
 
@@ -96,4 +123,3 @@ bool ATeamProjectile::IsValidOverlap(AActor* OtherActor)
 
 	return true;
 }
-

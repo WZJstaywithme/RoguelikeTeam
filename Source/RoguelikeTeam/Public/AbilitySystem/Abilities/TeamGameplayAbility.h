@@ -15,6 +15,6 @@ class ROGUELIKETEAM_API UTeamGameplayAbility : public UGameplayAbility
 	GENERATED_BODY()
 
 protected:
-	
+	float GetManaCost(float InLevel = 0.f) const;
 	float GetCooldown(float InLevel = 1.f) const;
 };

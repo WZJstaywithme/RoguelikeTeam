@@ -17,10 +17,7 @@ class ROGUELIKETEAM_API UTeamDamageGameplayAbility : public UTeamGameplayAbility
 	GENERATED_BODY()
 
 public:
-
-	UFUNCTION(BlueprintCallable)
-	void CauseDamage(AActor* TargetActor);
-
+	
 	UFUNCTION(BlueprintPure)
 	FDamageEffectParams MakeDamageEffectParamsFromClassDefaults(
 		AActor* TargetActor = nullptr,

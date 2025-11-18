@@ -3,16 +3,19 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "GameplayTagContainer.h"
 #include "ScalableFloat.h"
 #include "Engine/DataAsset.h"
 #include "CharacterClassInfo.generated.h"
 
+ class UTeamUserWidget;
 class UGameplayAbility;
 class UGameplayEffect;
 
 UENUM(BlueprintType)
 enum class ECharacterClass : uint8
 {
+	Leader,
 	Warrior,
 	Ranger
 };
@@ -30,6 +33,12 @@ struct FCharacterClassDefaultInfo
 
 	UPROPERTY(EditDefaultsOnly, Category = "Class Defaults")
 	FScalableFloat XPReward = FScalableFloat();
+
+	UPROPERTY(EditDefaultsOnly, Category = "Class Defaults")
+	TArray<TSubclassOf<UTeamUserWidget>> BarWidgets;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Class Defaults")
+	FGameplayTag SkillTag;
 };
 
 /**
@@ -55,6 +64,9 @@ public:
 
 	UPROPERTY(EditDefaultsOnly, Category = "Common Class Defaults")
 	TSubclassOf<UGameplayEffect> VitalAttributes;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Common Class Defaults")
+	TSubclassOf<UGameplayEffect> ActionAttribute;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Common Class Defaults")
 	TArray<TSubclassOf<UGameplayAbility>> CommonAbilities;

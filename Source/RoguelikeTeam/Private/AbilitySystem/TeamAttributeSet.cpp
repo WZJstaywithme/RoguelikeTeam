@@ -5,6 +5,7 @@
 
 #include "AbilitySystemBlueprintLibrary.h"
 #include "TeamGameplayTags.h"
+#include "AbilitySystem/TeamAbilitySystemLibrary.h"
 #include "GameFramework/Character.h"
 #include "Interaction/CombatInterface.h"
 #include "Player/TeamPlayerController.h"
@@ -35,6 +36,7 @@ void UTeamAttributeSet::InitializeAttributeMappings()
 	TagsToAttributes.Add(GameplayTags.Attributes_Secondary_Wsp, GetWspAttribute);
 	TagsToAttributes.Add(GameplayTags.Attributes_Secondary_MaxHealth, GetMaxHealthAttribute);
 	TagsToAttributes.Add(GameplayTags.Attributes_Secondary_MaxMana, GetMaxManaAttribute);
+	TagsToAttributes.Add(GameplayTags.Attributes_Secondary_ActionRate, GetActionRateAttribute);
     
 	// 抗性属性映射
 	// TagsToAttributes.Add(GameplayTags.Attributes_Resistance_Arcane, GetArcaneResistanceAttribute);
@@ -138,49 +140,49 @@ void UTeamAttributeSet::PostGameplayEffectExecute(const FGameplayEffectModCallba
 
 void UTeamAttributeSet::HandleIncomingDamage(const FEffectProperties& Props)
 {
-    // const float LocalIncomingDamage = GetIncomingDamage();
-    // SetIncomingDamage(0.f);
-    // if (LocalIncomingDamage > 0.f)
-    // {
-    //     const float NewHealth = GetHealth() - LocalIncomingDamage;
-    //     SetHealth(FMath::Clamp(NewHealth, 0.f, GetMaxHealth()));
-    //
-    //     const bool bFatal = NewHealth <= 0.f;
-    //     if (bFatal)
-    //     {
-    //         ICombatInterface* CombatInterface = Cast<ICombatInterface>(Props.TargetAvatarActor);
-    //         if (CombatInterface)
-    //         {
-    //             FVector Impulse = UTeamAbilitySystemLibrary::GetDeathImpulse(Props.EffectContextHandle);
-    //             CombatInterface->Die(UTeamAbilitySystemLibrary::GetDeathImpulse(Props.EffectContextHandle));
-    //         }
-    //         SendXPEvent(Props);
-    //         
-    //     }
-    //     else
-    //     {
-    //         if (Props.TargetCharacter->Implements<UCombatInterface>() && !ICombatInterface::Execute_IsBeingShocked(Props.TargetCharacter))
-    //         {
-    //             FGameplayTagContainer TagContainer;
-    //             TagContainer.AddTag(FTeamGameplayTags::Get().Effects_HitReact);
-    //             Props.TargetASC->TryActivateAbilitiesByTag(TagContainer);
-    //         }
-    //         
-    //         const FVector& KnockbackForce = UTeamAbilitySystemLibrary::GetKnockbackForce(Props.EffectContextHandle);
-    //         if (!KnockbackForce.IsNearlyZero(1.f))
-    //         {
-    //             Props.TargetCharacter->LaunchCharacter(KnockbackForce, true, true);
-    //         }
-    //     }
-    //         
-    //     const bool bBlock = UTeamAbilitySystemLibrary::IsBlockedHit(Props.EffectContextHandle);
-    //     const bool bCriticalHit = UTeamAbilitySystemLibrary::IsCriticalHit(Props.EffectContextHandle);
-    //     ShowFloatingText(Props, LocalIncomingDamage, bBlock, bCriticalHit);
-    //     if (UTeamAbilitySystemLibrary::IsSuccessfulDebuff(Props.EffectContextHandle))
-    //     {
-    //         Debuff(Props);
-    //     }
-    // }
+    const float LocalIncomingDamage = GetIncomingDamage();
+    SetIncomingDamage(0.f);
+    if (LocalIncomingDamage > 0.f)
+    { 
+        const float NewHealth = GetHealth() - LocalIncomingDamage;
+        SetHealth(FMath::Clamp(NewHealth, 0.f, GetMaxHealth()));
+    
+        const bool bFatal = NewHealth <= 0.f;
+        if (bFatal)
+        {
+            // ICombatInterface* CombatInterface = Cast<ICombatInterface>(Props.TargetAvatarActor);
+            // if (CombatInterface)
+            // {
+            //     FVector Impulse = UTeamAbilitySystemLibrary::GetDeathImpulse(Props.EffectContextHandle);
+            //     CombatInterface->Die(UTeamAbilitySystemLibrary::GetDeathImpulse(Props.EffectContextHandle));
+            // }
+            // SendXPEvent(Props);
+            
+        }
+        else
+        {
+            // if (Props.TargetCharacter->Implements<UCombatInterface>() && !ICombatInterface::Execute_IsBeingShocked(Props.TargetCharacter))
+            // {
+            //     FGameplayTagContainer TagContainer;
+            //     TagContainer.AddTag(FTeamGameplayTags::Get().Effects_HitReact);
+            //     Props.TargetASC->TryActivateAbilitiesByTag(TagContainer);
+            // }
+            
+            // const FVector& KnockbackForce = UTeamAbilitySystemLibrary::GetKnockbackForce(Props.EffectContextHandle);
+            // if (!KnockbackForce.IsNearlyZero(1.f))
+            // {
+            //     Props.TargetCharacter->LaunchCharacter(KnockbackForce, true, true);
+            // }
+        }
+            
+        const bool bBlock = UTeamAbilitySystemLibrary::IsAvoidedHit(Props.EffectContextHandle);
+        const bool bCriticalHit = UTeamAbilitySystemLibrary::IsCriticalHit(Props.EffectContextHandle);
+        ShowFloatingText(Props, LocalIncomingDamage, bBlock, bCriticalHit);
+        // if (UTeamAbilitySystemLibrary::IsSuccessfulDebuff(Props.EffectContextHandle))
+        // {
+        //     Debuff(Props);
+        // }
+    }
 }
 
 void UTeamAttributeSet::Debuff(const FEffectProperties& Props)
@@ -284,6 +286,13 @@ void UTeamAttributeSet::PostAttributeChange(const FGameplayAttribute& Attribute,
     {
         SetMana(GetMaxMana());
         bTopOffMana = false;
+    }
+    if (Attribute == GetActionAttribute() && Attribute.GetNumericValue(this) > 100.f)
+    {
+        if (Attribute.GetNumericValue(this) != 100.f)
+        {
+            SetAction(100.f);
+        }
     }
 }
 

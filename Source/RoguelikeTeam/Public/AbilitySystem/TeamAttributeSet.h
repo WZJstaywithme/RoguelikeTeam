@@ -139,6 +139,9 @@ public:
 	UPROPERTY(BlueprintReadOnly, Category = "Secondary Attributes")
 	FGameplayAttributeData MaxMana;
 	ATTRIBUTE_ACCESSORS(UTeamAttributeSet, MaxMana);
+	UPROPERTY(BlueprintReadOnly, Category = "Secondary Attributes")
+	FGameplayAttributeData ActionRate;
+	ATTRIBUTE_ACCESSORS(UTeamAttributeSet, ActionRate);
 
     // Resistance Attributes
     // DEFINE_ATTRIBUTE(FireResistance, "Resistance Attributes");
@@ -153,7 +156,10 @@ public:
 	UPROPERTY(BlueprintReadOnly, Category = "Vital Attributes")
 	FGameplayAttributeData Mana;
 	ATTRIBUTE_ACCESSORS(UTeamAttributeSet, Mana);
-
+	UPROPERTY(BlueprintReadOnly, Category = "Vital Attributes")
+	FGameplayAttributeData Action;
+	ATTRIBUTE_ACCESSORS(UTeamAttributeSet, Action);
+	
     // Meta Attributes
 	UPROPERTY(BlueprintReadOnly, Category = "Meta Attributes")
 	FGameplayAttributeData IncomingDamage;

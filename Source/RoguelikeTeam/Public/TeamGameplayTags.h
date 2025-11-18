@@ -21,6 +21,7 @@ public:
 	FGameplayTag Attributes_Secondary_Wsp;
 	FGameplayTag Attributes_Secondary_MaxHealth;
 	FGameplayTag Attributes_Secondary_MaxMana;
+	FGameplayTag Attributes_Secondary_ActionRate;
 	
 	FGameplayTag Attributes_Meta_IncomingXP;
 

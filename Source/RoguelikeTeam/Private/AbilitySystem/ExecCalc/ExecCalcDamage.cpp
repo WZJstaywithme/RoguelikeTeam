@@ -14,7 +14,7 @@
 #include "AbilitySystem/TeamAttributeSet.h"
 #include "Data/CharacterClassInfo.h"
 #include "Interaction/CombatInterface.h"
-#include "Kismet/GameplayStatics.h"
+	#include "Kismet/GameplayStatics.h"
 
 class UCharacterClassInfo;
 struct FTeamGameplayTags;
@@ -83,7 +83,7 @@ void UExecCalcDamage::Execute_Implementation(const FGameplayEffectCustomExecutio
 {
 	TMap<FGameplayTag, FGameplayEffectAttributeCaptureDefinition> TagsToCaptureDefs;
 	const FTeamGameplayTags& Tags = FTeamGameplayTags::Get();
-
+	
 	TagsToCaptureDefs.Add(Tags.Attributes_Secondary_Attack, DamageStatics().AttackDef);
 	TagsToCaptureDefs.Add(Tags.Attributes_Secondary_Defense, DamageStatics().DefenseDef);
 	TagsToCaptureDefs.Add(Tags.Attributes_Secondary_Critical, DamageStatics().CriticalDef);
@@ -99,10 +99,11 @@ void UExecCalcDamage::Execute_Implementation(const FGameplayEffectCustomExecutio
 
 	const UAbilitySystemComponent* SourceASC = ExecutionParams.GetSourceAbilitySystemComponent();
 	const UAbilitySystemComponent* TargetASC = ExecutionParams.GetTargetAbilitySystemComponent();
-
+	
 	AActor* SourceAvatar = SourceASC ? SourceASC->GetAvatarActor() : nullptr;
 	AActor* TargetAvatar = TargetASC ? TargetASC->GetAvatarActor() : nullptr;
 
+	// 获取等级
 	int32 SourcePlayerLevel = 1;
 	if (SourceAvatar->Implements<UCombatInterface>())
 	{
@@ -113,10 +114,10 @@ void UExecCalcDamage::Execute_Implementation(const FGameplayEffectCustomExecutio
 	{
 		TargetPlayerLevel = ICombatInterface::Execute_GetPlayerLevel(TargetAvatar);
 	}
-
+	
 	const FGameplayEffectSpec& Spec = ExecutionParams.GetOwningSpec();
 	FGameplayEffectContextHandle EffectContextHandle = Spec.GetContext();
-
+	
 	const FGameplayTagContainer* SourceTags = Spec.CapturedSourceTags.GetAggregatedTags();
 	const FGameplayTagContainer* TargetTags = Spec.CapturedTargetTags.GetAggregatedTags();
 	FAggregatorEvaluateParameters EvaluationParameters;
@@ -188,18 +189,18 @@ void UExecCalcDamage::Execute_Implementation(const FGameplayEffectCustomExecutio
 	float SourceHitRateChance = 0.f;
 	ExecutionParams.AttemptCalculateCapturedAttributeMagnitude(DamageStatics().HitRateDef, EvaluationParameters,
 	                                                           SourceHitRateChance);
-
+	
 	float HitRateChance = FMath::Clamp(SourceHitRateChance - TargetAvoidChance, 5.f, 95.f);
 	const bool bAvoided = FMath::RandRange(0, 100) < HitRateChance;
-
+	
 	UTeamAbilitySystemLibrary::SetIsAvoidedHit(EffectContextHandle, bAvoided);
-
+	
 	float Damage = 0.f;
-	if (bAvoided)
+	if (!bAvoided)
 	{
 		ExecutionParams.AttemptCalculateCapturedAttributeMagnitude(DamageStatics().AttackDef, EvaluationParameters,
 																   Damage);
-
+	
 		float TargetDefense = 0.f;
 		ExecutionParams.AttemptCalculateCapturedAttributeMagnitude(DamageStatics().DefenseDef, EvaluationParameters, TargetDefense);
 		TargetDefense = FMath::Clamp(TargetDefense, 0.f, 75.f);
@@ -222,7 +223,7 @@ void UExecCalcDamage::Execute_Implementation(const FGameplayEffectCustomExecutio
 			UTeamAbilitySystemLibrary::SetIsCriticalHit(EffectContextHandle, bCritical);
 		}
 	}
-
+	
 	const FGameplayModifierEvaluatedData EvaluatedData(UTeamAttributeSet::GetIncomingDamageAttribute(),
 	                                                   EGameplayModOp::Additive, Damage);
 	OutExecutionOutput.AddOutputModifier(EvaluatedData);
